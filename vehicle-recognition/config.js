@@ -1,20 +1,18 @@
 const buttons = [
   {
-    url: "https://govhack2018.itmad.com.au/api/v1/sensor-data",
+    url: "https://localhost/api/v1/sensor-data",
     percent: 0.8,
     data: {
-      id: 1,
-      sensor_id: 18,
+      sensor_id: 1,
       direction: "in",
       timestamp: 0
     }
   },
   {
-    url: "https://govhack2018.itmad.com.au/api/v1/sensor-data",
+    url: "https://localhost/api/v1/sensor-data",
     percent: 0.8,
     data: {
-      id: 1,
-      sensor_id: 18,
+      sensor_id: 1,
       direction: "out",
       timestamp: 0
     }
