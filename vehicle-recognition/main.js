@@ -43,6 +43,17 @@ class Main {
     document.createElement("div");
     document.body.appendChild(this.video);
 
+    this.carStates = Array();
+
+    // Extract our arguments for the sensor
+    let params = new URL(window.location.href).searchParams;
+    console.log("Params =>", params);
+    this.sensor_id = params.get("sensor_id");
+    console.log("Sensor ID => ", this.sensor_id);
+
+    this.direction = params.get("direction");
+    console.log("Direction => ", this.direction);
+
     // Create training buttons and info texts
     for (let i = 0; i < NUM_CLASSES; i++) {
       const div = document.createElement("div");
@@ -130,19 +141,40 @@ class Main {
               if (exampleCount[i] > 0) {
                 console.log(buttons[i].url);
 
-                this.infoTexts[i].innerText = ` ${
-                  exampleCount[i]
-                } examples - ${res.confidences[i] * 100}%`;
-                if (res.confidences[i] >= buttons[i].percent) {
-                  axios.post(
-                    buttons[i].url,
-                    Object.assign(buttons[i].data, { timestamp: Date.now() })
-                  );
+                let timeNowSecs = Math.round(Date.now() / 1000);
 
-                  console.log(buttons[i].url);
-                  console.log(
-                    Object.assign(buttons[i].data, { timestamp: Date.now() })
-                  );
+                if (this.carStates[timeNowSecs] == true) {
+                  console.log("HIT! Already exisys");
+                } else {
+                  this.infoTexts[i].innerText = ` ${
+                    exampleCount[i]
+                  } examples - ${res.confidences[i] * 100}%`;
+                  if (
+                    res.confidences[i] >= buttons[i].percent &&
+                    buttons[i].url != ""
+                  ) {
+                    this.carStates[timeNowSecs] = true;
+
+                    axios.post(
+                      buttons[i].url,
+                      Object.assign(buttons[i].data, {
+                        timestamp: timeNowSecs,
+                        sensor_id: this.sensor_id,
+                        direction: this.direction
+                      })
+                    );
+
+                    console.log(buttons[i].url);
+                    console.log(
+                      Object.assign(buttons[i].data, {
+                        timestamp: timeNowSecs,
+                        sensor_id: this.sensor_id,
+                        direction: this.direction
+                      })
+                    );
+                  } else {
+                    console.log("URL argument blank, skipping (e.g no car!)");
+                  }
                 }
               }
             }
